@@ -1,0 +1,21 @@
+with dates as (
+select date_add("${start_day}", a.pos) as d
+from (select posexplode(split(repeat("o", datediff("${end_day}", "${start_day}")), "o"))) a
+)
+select
+    d as d
+  , from_unixtime(unix_timestamp(d),'MM/dd/yyyy') date_formattedMMddYYY
+  , year(d) as year
+  , month(d) as month
+  ,concat(month(d),concat('-',year(d))) Month_Year
+  , day(d) as day
+  , date_format(d, 'u') as daynumber_of_week
+  , date_format(d, 'EEEE') as dayname_of_week
+  , date_format(d, 'D') as daynumber_of_year
+  ,cast(month(d)/4 + 1 AS BIGINT) as qtr
+  , date_format(d, 'W') as week_of_month
+  , date_format(d, 'w') as week_of_year
+  ,  if(date_format(d, 'u') BETWEEN 6 AND 7, true, false) as weekend
+from dates
+sort by d
+;
